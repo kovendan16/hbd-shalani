@@ -58,6 +58,7 @@
 
     section, header, footer { position: relative; z-index: 1; }
 
+    /* --- Headphone Overlay --- */
     #headphone-overlay {
       position: fixed; inset: 0; z-index: 10000;
       display: flex; align-items: center; justify-content: center;
@@ -192,9 +193,26 @@
 
     .message-card { padding: 0; overflow: hidden; }
     .message-card:hover { transform: translateY(-6px); box-shadow: 0 30px 80px rgba(232,69,128,0.2); }
-    .message-video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
-    .message-video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-    .message-video-wrap::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg,var(--pink),var(--purple),var(--gold),var(--teal),var(--pink)); background-size: 200% 100%; animation: shimmerLine 3s linear infinite; }
+    
+    /* Image Wrapper (Updated from Video Wrapper) */
+    .message-video-wrap { 
+      position: relative; 
+      padding-bottom: 56.25%; 
+      height: 0; 
+      overflow: hidden; 
+      background: #000; 
+    }
+    
+    /* Shared Styling for Video Player Class (works for img too) */
+    .birthday-video-player {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; /* Ensures the image fills the area nicely */
+      border: none;
+    }
+    
+    .message-video-wrap::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg,var(--pink),var(--purple),var(--gold),var(--teal),var(--pink)); background-size: 200% 100%; animation: shimmerLine 3s linear infinite; z-index: 2; }
     @keyframes shimmerLine { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
     .message-video-badge { position: absolute; top: 16px; left: 16px; background: rgba(0,0,0,0.55); backdrop-filter: blur(8px); padding: 6px 14px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; color: var(--gold); z-index: 5; border: 1px solid rgba(255,215,0,0.2); display: flex; align-items: center; gap: 6px; }
     .message-video-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--coral); animation: blink 1s ease-in-out infinite; }
@@ -233,7 +251,8 @@
     @keyframes ageGlow { 0% { filter: drop-shadow(0 0 20px rgba(232,69,128,0.15)); } 100% { filter: drop-shadow(0 0 60px rgba(232,69,128,0.35)); } }
     .age-label { font-family: 'Baloo 2', cursive; font-size: clamp(1rem,3vw,1.5rem); color: var(--text-muted); letter-spacing: 4px; text-transform: uppercase; }
 
-    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+    /* --- Gallery Styles --- */
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
     .gallery-item { position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 1; cursor: pointer; border: 2px solid transparent; transition: all 0.4s ease; }
     .gallery-item:hover { border-color: var(--pink); transform: scale(1.03); box-shadow: 0 10px 40px rgba(232,69,128,0.25); z-index: 2; }
     .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
@@ -241,6 +260,62 @@
     .gallery-item .gallery-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(74,16,64,0.75) 0%, transparent 60%); opacity: 0; transition: opacity 0.3s ease; display: flex; align-items: flex-end; padding: 16px; }
     .gallery-item:hover .gallery-overlay { opacity: 1; }
     .gallery-overlay span { font-family: 'Baloo 2', cursive; font-size: 0.9rem; color: white; }
+
+    /* --- Custom Lightbox (Popup) Styles --- */
+    .custom-lightbox {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .custom-lightbox.active {
+      display: flex;
+      opacity: 1;
+    }
+    .lightbox-content {
+      margin: auto;
+      display: block;
+      width: auto;
+      max-width: 90%;
+      max-height: 90vh;
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(255, 107, 157, 0.4);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+      border: 4px solid rgba(255,255,255,0.1);
+    }
+    .custom-lightbox.active .lightbox-content {
+      transform: scale(1);
+    }
+    .close-lightbox {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: #f1f1f1;
+      font-size: 40px;
+      font-weight: bold;
+      transition: 0.3s;
+      cursor: pointer;
+      z-index: 10000;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .close-lightbox:hover,
+    .close-lightbox:focus {
+      color: var(--pink);
+      text-decoration: none;
+      cursor: pointer;
+    }
 
     .music-player-card { text-align: center; }
     .music-icon { font-size: 60px; margin-bottom: 20px; display: inline-block; animation: pulse 2s ease-in-out infinite; }
@@ -264,11 +339,6 @@
     .reveal-delay-2 { transition-delay: 0.3s; }
     .reveal-delay-3 { transition-delay: 0.45s; }
 
-    .lightbox-modal .modal-content { background: transparent; border: none; }
-    .lightbox-modal .modal-body { padding: 0; }
-    .lightbox-modal .btn-close { position: absolute; top: -40px; right: 0; filter: invert(0.5); opacity: 0.7; }
-    .lightbox-modal img { border-radius: 16px; max-height: 85vh; width: auto; margin: 0 auto; display: block; }
-
     .birthday-toast { position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg,var(--pink-deep),var(--purple)); color: white; padding: 16px 28px; border-radius: 16px; font-family: 'Poppins',sans-serif; font-size: 0.9rem; box-shadow: 0 10px 40px rgba(232,69,128,0.4); z-index: 1000; transform: translateY(120%); opacity: 0; transition: all 0.5s cubic-bezier(0.68,-0.55,0.265,1.55); }
     .birthday-toast.show { transform: translateY(0); opacity: 1; }
 
@@ -286,7 +356,7 @@
     .volume-label .vol-dot.off { background: #E74C3C; }
 
     @media (max-width: 768px) { .birthday-section { padding: 60px 0; } .glass-card { padding: 28px 20px; border-radius: 18px; } .message-card { border-radius: 18px; } .message-content-area { padding: 28px 24px 32px; } .gallery-grid { grid-template-columns: repeat(2,1fr); gap: 10px; } .balloon { transform: scale(0.7); } .flying-gif { transform: scale(0.65); } .message-audio-bar { flex-wrap: wrap; border-radius: 20px; padding: 14px 16px; gap: 12px; } .sound-wave { display: none; } .scroll-btn { padding: 12px 26px; font-size: 0.95rem; } .hp-popup-card { padding: 36px 24px; } }
-    @media (max-width: 480px) { .gallery-grid { grid-template-columns: repeat(2,1fr); gap: 8px; } .cake-icon { font-size: 60px; } .flying-gif { transform: scale(0.5); } .message-content-area { padding: 24px 18px 28px; } .message-text { font-size: 1rem; line-height: 1.75; } .scroll-btn { padding: 11px 22px; font-size: 0.9rem; gap: 8px; } .hp-popup-card { padding: 32px 20px; border-radius: 22px; } .hp-proceed-btn { padding: 14px 32px; } .hp-headphone-emoji { font-size: 64px; } .volume-toggle { width: 48px; height: 48px; font-size: 20px; bottom: 24px; left: 24px; } .volume-label { bottom: 82px; left: 24px; font-size: 0.68rem; } }
+    @media (max-width: 480px) { .gallery-grid { grid-template-columns: 1fr; gap: 15px; } .cake-icon { font-size: 60px; } .flying-gif { transform: scale(0.5); } .message-content-area { padding: 24px 18px 28px; } .message-text { font-size: 1rem; line-height: 1.75; } .scroll-btn { padding: 11px 22px; font-size: 0.9rem; gap: 8px; } .hp-popup-card { padding: 32px 20px; border-radius: 22px; } .hp-proceed-btn { padding: 14px 32px; } .hp-headphone-emoji { font-size: 64px; } .volume-toggle { width: 48px; height: 48px; font-size: 20px; bottom: 24px; left: 24px; } .volume-label { bottom: 82px; left: 24px; font-size: 0.68rem; } }
   </style>
 </head>
 <body>
@@ -296,7 +366,7 @@
       <div class="hp-particles"><div class="hp-particle"></div><div class="hp-particle"></div><div class="hp-particle"></div><div class="hp-particle"></div><div class="hp-particle"></div><div class="hp-particle"></div><div class="hp-particle"></div><div class="hp-particle"></div></div>
       <div class="hp-headphone-icon"><div class="hp-sound-ring"></div><div class="hp-sound-ring"></div><div class="hp-sound-ring"></div><span class="hp-headphone-emoji">🎧</span></div>
       <h2 class="hp-title">Please Wear Your <span>Headphones</span></h2>
-      <p class="hp-subtitle">This experience includes music & voice messages that are best enjoyed with headphones on. Put them on for the full magical experience! ✨</p>
+      <p class="hp-subtitle">This experience includes music and voice messages that are best enjoyed with headphones on. Put them on for the full magical experience! ✨</p>
       <div class="hp-warning-badge"><i class="bi bi-exclamation-triangle-fill"></i>Headphones are required for the best experience</div>
       <br>
       <button class="hp-proceed-btn" id="hp-proceed-btn"><i class="bi bi-headphones"></i>I'm Ready — Let's Go!<i class="bi bi-arrow-right"></i></button>
@@ -307,7 +377,6 @@
 
   <div id="main-content">
     <canvas id="confetti-canvas"></canvas>
-    <div class="balloons-container"><div class="balloon"></div><div class="balloon"></div><div class="balloon"></div><div class="balloon"></div><div class="balloon"></div><div class="balloon"></div><div class="balloon"></div><div class="balloon"></div></div>
     <div class="flying-gifs-container">
       <div class="flying-gif"><div class="gif-balloon"></div><img src="https://media.tenor.com/hIyPApOJ1HcAAAAM/pixar-party.gif" alt="Fun 1"></div>
       <div class="flying-gif"><div class="gif-balloon"></div><img src="https://media.tenor.com/3MzY4mbkQr4AAAAM/birthday-celebration.gif" alt="Fun 2"></div>
@@ -338,8 +407,9 @@
             <div class="section-divider reveal reveal-delay-1"></div>
             <div class="glass-card message-card reveal reveal-delay-2">
               <div class="message-video-wrap">
-                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" title="Birthday Video for Shalani" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                <div class="message-video-badge"><span class="dot"></span>🎬 Birthday Montage</div>
+                <!-- Updated: Image Replacement -->
+                <img src="WhatsApp Image 2026-03-31 at 7.35.25 PM.webp" alt="Special Birthday Moment" class="birthday-video-player">
+                <div class="message-video-badge"><span class="dot"></span>✨ Special Moment</div>
               </div>
               <div class="message-content-area">
                 <p class="message-text">
@@ -410,18 +480,33 @@
         <h2 class="section-heading reveal"><span>Memory</span> Gallery</h2>
         <div class="section-divider reveal reveal-delay-1"></div>
         <div class="gallery-grid reveal reveal-delay-2">
-          <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#lightboxModal" data-img="https://picsum.photos/seed/shalani-bday1/600/600.jpg"><img src="https://picsum.photos/seed/shalini-bday1/600/600.jpg" alt="Memory 1" loading="lazy"><div class="gallery-overlay"><span>Beautiful moments ✨</span></div></div>
-          <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#lightboxModal" data-img="https://picsum.photos/seed/shalani-bday2/600/600.jpg"><img src="https://picsum.photos/seed/shalani-bday2/600/600.jpg" alt="Memory 2" loading="lazy"><div class="gallery-overlay"><span>Laughter & Joy 😄</span></div></div>
-          <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#lightboxModal" data-img="https://picsum.photos/seed/shalani-bday3/600/600.jpg"><img src="https://picsum.photos/seed/shalani-bday3/600/600.jpg" alt="Memory 3" loading="lazy"><div class="gallery-overlay"><span>Adventures together 🌍</span></div></div>
-          <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#lightboxModal" data-img="https://picsum.photos/seed/shalani-bday4/600/600.jpg"><img src="https://picsum.photos/seed/shalani-bday4/600/600.jpg" alt="Memory 4" loading="lazy"><div class="gallery-overlay"><span>Unforgettable times 💫</span></div></div>
-          <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#lightboxModal" data-img="https://picsum.photos/seed/shalani-bday5/600/600.jpg"><img src="https://picsum.photos/seed/shalani-bday5/600/600.jpg" alt="Memory 5" loading="lazy"><div class="gallery-overlay"><span>Pure happiness 🌸</span></div></div>
-          <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#lightboxModal" data-img="https://picsum.photos/seed/shalani-bday6/600/600.jpg"><img src="https://picsum.photos/seed/shalani-bday6/600/600.jpg" alt="Memory 6" loading="lazy"><div class="gallery-overlay"><span>Celebrating YOU 🎉</span></div></div>
+          
+          <!-- Image 1: Specific Request -->
+          <div class="gallery-item">
+            <img src="https://github.com/kovendan16/hbd-shalani/blob/main/1.jpeg?raw=true" alt="Memory 1" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/err1/600/600.jpg';">
+            <div class="gallery-overlay"><span>Beautiful Moment 1 ✨</span></div>
+          </div>
+
+          <!-- Image 2: Specific Request -->
+          <div class="gallery-item">
+            <img src="https://github.com/kovendan16/hbd-shalani/blob/main/2.jpeg?raw=true" alt="Memory 2" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/err2/600/600.jpg';">
+            <div class="gallery-overlay"><span>Beautiful Moment 2 ✨</span></div>
+          </div>
+
+          <!-- Image 3: Specific Request (Assuming GitHub path based on pattern) -->
+          <div class="gallery-item">
+            <img src="https://github.com/kovendan16/hbd-shalani/blob/main/cfa06896-1582-4314-a0af-8f0f28caf3e9.jfif?raw=true" alt="Memory 3" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/err3/600/600.jpg';">
+            <div class="gallery-overlay"><span>Beautiful Moment 3 ✨</span></div>
+          </div>
+
         </div>
       </div>
     </section>
 
-    <div class="modal fade lightbox-modal" id="lightboxModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button><div class="modal-body"><img src="" alt="Gallery Image" id="lightbox-img" class="img-fluid"></div></div></div>
+    <!-- Custom Lightbox (Popup) HTML -->
+    <div id="custom-lightbox" class="custom-lightbox">
+      <span class="close-lightbox">&times;</span>
+      <img class="lightbox-content" id="lightbox-img">
     </div>
 
     <footer class="birthday-footer">
@@ -510,6 +595,8 @@
     bgAudio.addEventListener('play', function() { bgPlaying = true; if (!bgMuted) bgAudio.volume = 0.35; updateVolUI(); });
     bgAudio.addEventListener('pause', function() { bgPlaying = false; updateVolUI(); });
 
+    // Video conflict logic removed as video has been replaced with image
+
     (function() {
       var canvas = document.getElementById('confetti-canvas'); var ctx = canvas.getContext('2d'); var particles = [];
       var colors = ['#FF6B9D','#E84580','#C44FE2','#FFD700','#FF6F61','#FFB3D1','#8E2DAF','#FFD6E8'];
@@ -537,7 +624,49 @@
 
     (function() { var a=document.getElementById('msg-audio'),b=document.getElementById('msg-play-btn'),ic=document.getElementById('msg-play-icon'),w=document.getElementById('msg-sound-wave'),p=false; b.addEventListener('click', function() { if(p){a.pause();ic.className='bi bi-play-fill';b.classList.remove('playing');w.classList.remove('active');}else{a.play().catch(function(){});ic.className='bi bi-pause-fill';b.classList.add('playing');w.classList.add('active');} p=!p; }); a.addEventListener('ended',function(){p=false;ic.className='bi bi-play-fill';b.classList.remove('playing');w.classList.remove('active');}); })();
 
-    (function() { var img=document.getElementById('lightbox-img'); document.querySelectorAll('.gallery-item').forEach(function(item) { item.addEventListener('click',function() { img.src=item.getAttribute('data-img'); }); }); })();
+    // ★ CUSTOM LIGHTBOX (POPUP) SCRIPT ★
+    (function() {
+      var lightbox = document.getElementById('custom-lightbox');
+      var lightboxImg = document.getElementById('lightbox-img');
+      var closeBtn = document.querySelector('.close-lightbox');
+      var galleryItems = document.querySelectorAll('.gallery-item');
+
+      // Open Lightbox
+      galleryItems.forEach(function(item) {
+        item.addEventListener('click', function() {
+          var img = this.querySelector('img');
+          lightboxImg.src = img.src;
+          lightbox.classList.add('active');
+          document.body.style.overflow = 'hidden'; // Prevent scrolling background
+        });
+      });
+
+      // Close Lightbox functions
+      function closeLightbox() {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = ''; // Restore scrolling
+        setTimeout(function() { lightboxImg.src = ''; }, 300); // Clear src after animation
+      }
+
+      // Close on click X
+      if(closeBtn) {
+        closeBtn.addEventListener('click', closeLightbox);
+      }
+
+      // Close on click outside image
+      lightbox.addEventListener('click', function(e) {
+        if (e.target === lightbox) {
+          closeLightbox();
+        }
+      });
+
+      // Close on Escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape" && lightbox.classList.contains('active')) {
+          closeLightbox();
+        }
+      });
+    })();
 
     (function() { var t=document.getElementById('birthday-toast'),c=setInterval(function() { if (document.getElementById('main-content').classList.contains('revealed')) { clearInterval(c); setTimeout(function() { t.classList.add('show'); setTimeout(function() { t.classList.remove('show'); },4000); },1500); } },300); })();
 
